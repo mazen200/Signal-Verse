@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tkinter import Toplevel, messagebox, filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from scipy.interpolate import interp1d
+from scipy.interpolate import make_interp_spline
 # Function to generate and plot sinusoidal signals in two windows
 def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var, root):
     try:
@@ -29,14 +30,17 @@ def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_fr
         cont_window = Toplevel(root)
         cont_window.title("Continuous Signal")
         fig_cont, ax_cont = plt.subplots()
-        ax_cont.plot(t_cont, signal_cont, label="Continuous Signal", color="blue")
+        cubic_interpolation_model = interp1d(t_cont, signal_cont, kind = "cubic")
+        x_cubic = np.linspace(t_cont.min(), signal_cont.max(), 500)
+        x_cubic = np.clip(x_cubic, 0, 1)
+        y_cubic = cubic_interpolation_model(x_cubic)
+        ax_cont.plot(x_cubic, y_cubic, label="Continuous Signal", color="blue")
         ax_cont.set_xlabel("Time")
         ax_cont.set_ylabel("Amplitude")
         ax_cont.legend()
         canvas_cont = FigureCanvasTkAgg(fig_cont, master=cont_window)
         canvas_cont.draw()
         canvas_cont.get_tk_widget().pack()
-
         disc_window = Toplevel(root)
         disc_window.title("Discrete Signal")
         fig_disc, ax_disc = plt.subplots()
