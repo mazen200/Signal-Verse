@@ -17,30 +17,30 @@ def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_fr
             messagebox.showerror("Sampling Error", "Sampling frequency must be at least twice the analog frequency!")
             return
 
-        t_cont = np.linspace(0, 1, 1000)
-        t_disc = np.arange(0, 1, 1/sampling_freq)
+        t_cont = np.linspace(0, 1, 1000) # time continous x
+        t_disc = np.arange(0, 1, 1/sampling_freq) # time discrete x
 
-        if signal_type == 0:
+        if signal_type == 0: 
             signal_cont = amplitude * np.sin(2 * np.pi * analog_freq * t_cont + phase_shift)
             signal_disc = amplitude * np.sin(2 * np.pi * analog_freq * t_disc + phase_shift)
-        else:
+        else:                  
             signal_cont = amplitude * np.cos(2 * np.pi * analog_freq * t_cont + phase_shift)
             signal_disc = amplitude * np.cos(2 * np.pi * analog_freq * t_disc + phase_shift)
 
+        #draw continous signal on new window
         cont_window = Toplevel(root)
         cont_window.title("Continuous Signal")
         fig_cont, ax_cont = plt.subplots()
         cubic_interpolation_model = interp1d(t_cont, signal_cont, kind = "cubic")
-        x_cubic = np.linspace(t_cont.min(), signal_cont.max(), 500)
-        x_cubic = np.clip(x_cubic, 0, 1)
-        y_cubic = cubic_interpolation_model(x_cubic)
-        ax_cont.plot(x_cubic, y_cubic, label="Continuous Signal", color="blue")
+        ax_cont.plot(t_cont, signal_cont, label="Continuous Signal", color="blue")
         ax_cont.set_xlabel("Time")
         ax_cont.set_ylabel("Amplitude")
         ax_cont.legend()
         canvas_cont = FigureCanvasTkAgg(fig_cont, master=cont_window)
         canvas_cont.draw()
         canvas_cont.get_tk_widget().pack()
+
+        #draw discrete signal on new window
         disc_window = Toplevel(root)
         disc_window.title("Discrete Signal")
         fig_disc, ax_disc = plt.subplots()
