@@ -89,9 +89,11 @@ def plot_signal_from_file(root):
     cont_window = Toplevel(root)
     cont_window.title("Continuous Signal from File")
     fig_cont, ax_cont = plt.subplots()
-    
+    cubic_interpolation_model = interp1d(indices_or_freqs, amplitudes, kind = "cubic")
+    x_cubic = np.linspace(min(indices_or_freqs), max(indices_or_freqs), 500)
+    y_cubic = cubic_interpolation_model(x_cubic)
     if signal_type == 0:
-        ax_cont.plot(indices_or_freqs, amplitudes, label="Continuous Signal")
+        ax_cont.plot(x_cubic, y_cubic, label="Continuous Signal")
     elif signal_type == 1:
         time = np.linspace(0, 1, 500)
         signal = np.zeros_like(time)
