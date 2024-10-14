@@ -1,11 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from tkinter import Toplevel, messagebox, filedialog
+from tkinter import Toplevel, messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from scipy.interpolate import interp1d
-from scipy.interpolate import make_interp_spline
-from comparesignals import SignalSamplesAreEqual
-# Function to generate and plot sinusoidal signals in two windows
+
+import numpy as np
+import matplotlib.pyplot as plt
+from tkinter import Toplevel, messagebox
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var, cmpbool, root):
     try:
         signal_type = signal_type_var.get()
@@ -13,29 +15,32 @@ def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_fr
         phase_shift = float(phase_entry.get())
         analog_freq = float(analog_freq_entry.get())
         sampling_freq = float(sampling_freq_entry.get())
-        cmptemp = cmpbool.get()
 
         if sampling_freq < 2 * analog_freq:
             messagebox.showerror("Sampling Error", "Sampling frequency must be at least twice the analog frequency!")
             return
 
-        num_samples_cont = 1000  # Number of continuous sample points for a smooth curve
-        num_samples_disc = int(sampling_freq)  # Number of discrete samples based on sampling frequency
+        duration = 1  # Duration of the signal in seconds
+        num_samples_cont = 1000  # Number of points for continuous signal
+        num_samples_disc = int(sampling_freq * duration)  # Integer number of discrete samples
 
-        # Generate continuous signal using time values
-        t_cont = np.linspace(0, 1, num_samples_cont)  # Continuous time over 1 second
-        sample_indices_disc = np.arange(num_samples_disc)  # Sample indices for discrete signal
-        t_disc = sample_indices_disc / sampling_freq  # Discrete time based on sampling frequency
+        # Number of samples to display on the x-axis (choose k < num_samples_disc)
+        k = min(10, num_samples_disc) 
 
-        # Generate signals based on type (sine or cosine)
-        if signal_type == 0: 
+        # Time array for continuous signal
+        t_cont = np.linspace(0, duration, num_samples_cont)
+        # Integer sample indices for discrete signal
+        sample_indices_disc = np.arange(num_samples_disc)
+
+        # Generate the sinusoidal signal
+        if signal_type == 0:  # Sine wave
             signal_cont = amplitude * np.sin(2 * np.pi * analog_freq * t_cont + phase_shift)
-            signal_disc = amplitude * np.sin(2 * np.pi * analog_freq * t_disc + phase_shift)
-        else:
+            signal_disc = amplitude * np.sin(2 * np.pi * analog_freq * sample_indices_disc / sampling_freq + phase_shift)
+        else:  # Cosine wave
             signal_cont = amplitude * np.cos(2 * np.pi * analog_freq * t_cont + phase_shift)
-            signal_disc = amplitude * np.cos(2 * np.pi * analog_freq * t_disc + phase_shift)
+            signal_disc = amplitude * np.cos(2 * np.pi * analog_freq * sample_indices_disc / sampling_freq + phase_shift)
 
-        # Plot continuous signal with time on the x-axis
+        # Plot the continuous signal
         cont_window = Toplevel(root)
         cont_window.title("Continuous Signal")
         fig_cont, ax_cont = plt.subplots()
@@ -47,23 +52,17 @@ def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_fr
         canvas_cont.draw()
         canvas_cont.get_tk_widget().pack()
 
-        # Plot discrete signal with sample indices on the x-axis
+        # Plot only the first k discrete samples
         disc_window = Toplevel(root)
         disc_window.title("Discrete Signal")
         fig_disc, ax_disc = plt.subplots()
-        ax_disc.stem(sample_indices_disc, signal_disc, linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Samples")
+        ax_disc.stem(sample_indices_disc[:k], signal_disc[:k], linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Samples")
         ax_disc.set_xlabel("Sample Index")
         ax_disc.set_ylabel("Amplitude")
         ax_disc.legend()
         canvas_disc = FigureCanvasTkAgg(fig_disc, master=disc_window)
         canvas_disc.draw()
         canvas_disc.get_tk_widget().pack()
-
-        if cmptemp == 1:
-            file_path = filedialog.askopenfilename()
-            if not file_path:
-                return
-            print(SignalSamplesAreEqual(file_path, range(len(signal_disc)), signal_disc))
 
     except ValueError:
         messagebox.showerror("Input Error", "Please enter valid numerical values for all fields.")
