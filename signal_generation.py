@@ -4,15 +4,16 @@ from tkinter import Toplevel, messagebox, filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.interpolate import interp1d
 from scipy.interpolate import make_interp_spline
+from comparesignals import SignalSamplesAreEqual
 # Function to generate and plot sinusoidal signals in two windows
-def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var, root):
+def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var,cmpbool, root):
     try:
         signal_type = signal_type_var.get()
         amplitude = float(amplitude_entry.get())
         phase_shift = float(phase_entry.get())
         analog_freq = float(analog_freq_entry.get())
         sampling_freq = float(sampling_freq_entry.get())
-
+        cmptemp = cmpbool.get()
         if sampling_freq < 2 * analog_freq:
             messagebox.showerror("Sampling Error", "Sampling frequency must be at least twice the analog frequency!")
             return
@@ -53,7 +54,11 @@ def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_fr
         canvas_disc.get_tk_widget().pack()
 
         #compare
-        print(SignalSamplesAreEqual("CosOutput.txt",range(len(signal_disc)),signal_disc))
+        if cmptemp == 1 :
+            file_path = filedialog.askopenfilename()
+            if not file_path:
+                  return
+            print(SignalSamplesAreEqual(file_path,range(len(signal_disc)),signal_disc))
     except ValueError:
         messagebox.showerror("Input Error", "Please enter valid numerical values for all fields.")
 
@@ -121,36 +126,3 @@ def plot_signal_from_file(root):
     canvas_disc = FigureCanvasTkAgg(fig_disc, master=disc_window)
     canvas_disc.draw()
     canvas_disc.get_tk_widget().pack()
-
-
-def SignalSamplesAreEqual(file_name,indices,samples):
-    expected_indices=[]
-    expected_samples=[]
-    with open(file_name, 'r') as f:
-        line = f.readline()
-        line = f.readline()
-        line = f.readline()
-        line = f.readline()
-        while line:
-            # process line
-            L=line.strip()
-            if len(L.split(' '))==2:
-                L=line.split(' ')
-                V1=int(L[0])
-                V2=float(L[1])
-                expected_indices.append(V1)
-                expected_samples.append(V2)
-                line = f.readline()
-            else:
-                break
-                
-    if len(expected_samples)!=len(samples):
-        print("Test case failed, your signal have different length from the expected one")
-        return
-    for i in range(len(expected_samples)):
-        if abs(samples[i] - expected_samples[i]) < 0.01:
-            continue
-        else:
-            print("Test case failed, your signal have different values from the expected one") 
-            return
-    print("Test case passed successfully")

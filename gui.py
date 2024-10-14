@@ -36,9 +36,14 @@ def task_one_interface(root):
     signal_type_var = tk.IntVar(value=0)
     tk.Radiobutton(left_frame, text="Sine", variable=signal_type_var, value=0, bg="white", fg="#1569C7").pack()
     tk.Radiobutton(left_frame, text="Cosine", variable=signal_type_var, value=1, bg="white", fg="#1569C7").pack()
+    
+    tk.Label(left_frame, text="compare with file ?", bg="white", fg="#1569C7", font=("Helvetica", 12)).pack(pady=10)
+    cmpbool = tk.IntVar(value=0)
+    tk.Radiobutton(left_frame, text="NO", variable=cmpbool, value=0, bg="white", fg="#1569C7").pack()
+    tk.Radiobutton(left_frame, text="YES", variable=cmpbool, value=1, bg="white", fg="#1569C7").pack()
 
     generate_button = tk.Button(left_frame, text="Generate Signal", bg="#1569C7", fg="white", font=("Helvetica", 12),
-                                command=lambda: generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var, root))
+                                command=lambda: generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var,cmpbool, root))
     generate_button.pack(pady=20)
 
     tk.Button(left_frame, text="Upload Signal File", bg="#1569C7", fg="white", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root)).pack(pady=20)
