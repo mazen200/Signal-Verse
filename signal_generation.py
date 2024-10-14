@@ -52,6 +52,8 @@ def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_fr
         canvas_disc.draw()
         canvas_disc.get_tk_widget().pack()
 
+        #compare
+        print(SignalSamplesAreEqual("CosOutput.txt",range(len(signal_disc)),signal_disc))
     except ValueError:
         messagebox.showerror("Input Error", "Please enter valid numerical values for all fields.")
 
@@ -94,12 +96,6 @@ def plot_signal_from_file(root):
     y_cubic = cubic_interpolation_model(x_cubic)
     if signal_type == 0:
         ax_cont.plot(x_cubic, y_cubic, label="Continuous Signal")
-    elif signal_type == 1:
-        time = np.linspace(0, 1, 500)
-        signal = np.zeros_like(time)
-        for freq, amp, phase in zip(indices_or_freqs, amplitudes, phase_shifts):
-            signal += amp * np.cos(2 * np.pi * freq * time + phase)
-        ax_cont.plot(time, signal, label="Continuous Signal")
 
     ax_cont.set_xlabel("Time" if signal_type == 0 else "Frequency")
     ax_cont.set_ylabel("Amplitude")
@@ -125,3 +121,36 @@ def plot_signal_from_file(root):
     canvas_disc = FigureCanvasTkAgg(fig_disc, master=disc_window)
     canvas_disc.draw()
     canvas_disc.get_tk_widget().pack()
+
+
+def SignalSamplesAreEqual(file_name,indices,samples):
+    expected_indices=[]
+    expected_samples=[]
+    with open(file_name, 'r') as f:
+        line = f.readline()
+        line = f.readline()
+        line = f.readline()
+        line = f.readline()
+        while line:
+            # process line
+            L=line.strip()
+            if len(L.split(' '))==2:
+                L=line.split(' ')
+                V1=int(L[0])
+                V2=float(L[1])
+                expected_indices.append(V1)
+                expected_samples.append(V2)
+                line = f.readline()
+            else:
+                break
+                
+    if len(expected_samples)!=len(samples):
+        print("Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(expected_samples)):
+        if abs(samples[i] - expected_samples[i]) < 0.01:
+            continue
+        else:
+            print("Test case failed, your signal have different values from the expected one") 
+            return
+    print("Test case passed successfully")
