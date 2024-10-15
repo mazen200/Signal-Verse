@@ -24,20 +24,11 @@ def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_fr
         num_samples_disc = int(sampling_freq * duration)  # Integer number of discrete samples
         # Number of samples to display on the x-axis (choose k < num_samples_disc)
         k = min(10, num_samples_disc) 
-        
-        #num_samples_cont = 1000  # Number of continuous sample points for a smooth curve
-        #num_samples_disc = int(sampling_freq)  # Number of discrete samples based on sampling frequency
-
 
         # Time array for continuous signal
         t_cont = np.linspace(0, duration, num_samples_cont)
         # Integer sample indices for discrete signal
         sample_indices_disc = np.arange(num_samples_disc)
-
-        # Generate continuous signal using time values
-      #  t_cont = np.linspace(0, 1, num_samples_cont)  # Continuous time over 1 second
-      #  sample_indices_disc = np.arange(num_samples_disc)  # Sample indices for discrete signal
-      #  t_disc = sample_indices_disc / sampling_freq  # Discrete time based on sampling frequency
 
         # Generate signals based on type (sine or cosine)
         if signal_type == 0: 
@@ -64,7 +55,6 @@ def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_fr
         disc_window.title("Discrete Signal")
         fig_disc, ax_disc = plt.subplots()
         ax_disc.stem(sample_indices_disc[:k], signal_disc[:k], linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Samples")
-        #ax_disc.stem(sample_indices_disc, signal_disc, linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Samples")
         ax_disc.set_xlabel("Sample Index")
         ax_disc.set_ylabel("Amplitude")
         ax_disc.legend()
@@ -132,11 +122,11 @@ def plot_signal_from_file(root):
     disc_window = Toplevel(root)
     disc_window.title("Discrete Signal from File")
     fig_disc, ax_disc = plt.subplots()
-
+    sample_indices = range(len(amplitudes))
     if signal_type == 0:
-        ax_disc.stem(indices_or_freqs, amplitudes, linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Signal")
+        ax_disc.stem(sample_indices, amplitudes, linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Signal")
     
-    ax_disc.set_xlabel("Time" if signal_type == 0 else "Frequency")
+    ax_disc.set_xlabel("sample index")
     ax_disc.set_ylabel("Amplitude")
     ax_disc.legend()
     canvas_disc = FigureCanvasTkAgg(fig_disc, master=disc_window)
