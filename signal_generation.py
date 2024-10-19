@@ -5,6 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.interpolate import interp1d
 from scipy.interpolate import make_interp_spline
 from comparesignals import SignalSamplesAreEqual
+
 # Function to generate and plot sinusoidal signals in two windows
 def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var, cmpbool, root):
     try:
