@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from tkinter import Toplevel, messagebox, filedialog
+from tkinter import Toplevel, messagebox, filedialog , simpledialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.interpolate import interp1d
 from scipy.interpolate import make_interp_spline
@@ -97,13 +97,42 @@ def parse_input_file(file_path):
     return signal_type, is_periodic, indices_or_freqs, amplitudes, phase_shifts
 
 # Function to plot signal from file in two windows
-def plot_signal_from_file(root):
+def plot_signal_from_file(root,num):
     file_path = filedialog.askopenfilename()
     if not file_path:
         return
     
     signal_type, is_periodic, indices_or_freqs, amplitudes, phase_shifts = parse_input_file(file_path)
 
+    if num == 1 :   #multiply
+     # Ask for a constant to multiply the signal
+      constant = simpledialog.askfloat("Input", "Enter a constant to multiply the signal (e.g., -1 to invert):")
+      if constant is None:
+         return  # Exit if no constant is provided
+      amplitudes = [amplitude * constant for amplitude in amplitudes]
+    elif num == 2 :   #normaliz
+      mode = simpledialog.askstring("Input", "Enter normalization mode (0 to 1 or -1 to 1):")
+      if mode not in ["0 to 1", "-1 to 1"]:
+         return  # Exit if invalid mode is provided
+      
+      min_amp = min(amplitudes)
+      max_amp = max(amplitudes)
+      if mode == "0 to 1":
+         # Normalize to [0, 1]
+         amplitudes =  [(amplitude - min_amp) / (max_amp - min_amp) for amplitude in amplitudes]
+      elif mode == "-1 to 1":
+         # Normalize to [-1, 1]
+         amplitudes =  [2 * (amplitude - min_amp) / (max_amp - min_amp) - 1 for amplitude in amplitudes]
+    elif num == 3 :   #square
+      amplitudes = [amplitude ** 2 for amplitude in amplitudes]
+    elif num == 4 :   #accumlate
+      accumulated_amplitudes = []
+      current_sum = 0
+      for amplitude in amplitudes:
+         current_sum += amplitude
+         accumulated_amplitudes.append(current_sum)
+      amplitudes = accumulated_amplitudes
+      
     cont_window = Toplevel(root)
     cont_window.title("Continuous Signal from File")
     fig_cont, ax_cont = plt.subplots()
@@ -133,3 +162,9 @@ def plot_signal_from_file(root):
     canvas_disc = FigureCanvasTkAgg(fig_disc, master=disc_window)
     canvas_disc.draw()
     canvas_disc.get_tk_widget().pack()
+
+    if num > 0 :
+        file_path = filedialog.askopenfilename()
+        if not file_path:
+            return
+        print(SignalSamplesAreEqual(file_path, range(len(amplitudes)), amplitudes))
