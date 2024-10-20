@@ -153,8 +153,9 @@ def plot_signal_from_file(root,num):
     disc_window.title("Discrete Signal from File")
     fig_disc, ax_disc = plt.subplots()
     sample_indices = range(len(amplitudes))
+    k = min(10, sample_indices)
     if signal_type == 0:
-        ax_disc.stem(sample_indices, amplitudes, linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Signal")
+        ax_disc.stem(sample_indices[:k], amplitudes[:k], linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Signal")
     
     ax_disc.set_xlabel("sample index")
     ax_disc.set_ylabel("Amplitude")

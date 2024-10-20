@@ -60,8 +60,8 @@ def plot_added_subtracted_signals(root,amplitudes, indices_or_freqs):
     disc_window.title("Discrete Signal from File")
     fig_disc, ax_disc = plt.subplots()
     sample_indices = range(len(amplitudes))
-    
-    ax_disc.stem(sample_indices, amplitudes, linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Signal")
+    k = min(10, sample_indices)
+    ax_disc.stem(sample_indices[:k], amplitudes[:k], linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Signal")
     
     ax_disc.set_xlabel("sample index")
     ax_disc.set_ylabel("Amplitude")
