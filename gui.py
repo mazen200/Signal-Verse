@@ -1,6 +1,6 @@
 import tkinter as tk
 from signal_generation import generate_signal, plot_signal_from_file
-
+from adder_subtracter import load_and_process_files
 
 # Function to create signal generation interface
 def task_one_interface():
@@ -47,6 +47,18 @@ def task_one_interface():
                                 command=lambda: generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var,cmpbool, root))
     generate_button.pack(pady=20)   
 
+# Function to create signal generation interface
+def upload_signal_options():
+    root = tk.Tk()
+    root.title("upload_signal_options")
+    root.configure(bg="#E7DECC")
+    for widget in root.winfo_children():
+        widget.destroy()
+    tk.Button(root, text="only draw Signal",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,0)).pack(pady=10)
+    tk.Button(root, text="multiply",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,1)).pack(pady=10)
+    tk.Button(root, text="normalize",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,2)).pack(pady=10)
+    tk.Button(root, text="square",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,3)).pack(pady=10)
+    tk.Button(root, text="accumlate",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,4)).pack(pady=10)
 # Function to show the home page
 def home_page(root):
     for widget in root.winfo_children():
@@ -54,6 +66,8 @@ def home_page(root):
 
     welcome_label = tk.Label(root, text="Welcome to Visualizer", bg="#1569C7", fg="white", font=("Helvetica", 24))
     welcome_label.pack(pady=50, fill=tk.X)
-    tk.Button(root, text="Upload Signal File",bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root)).pack(pady=15)
+    tk.Button(root, text="Upload Signal File",bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: upload_signal_options()).pack(pady=15)
     tk.Button(root, text="Generate Signal", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: task_one_interface()).pack(pady=15)
+    tk.Button(root, text="add and sub 2 signals", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: load_and_process_files(root)).pack(pady=15)
+    
    
