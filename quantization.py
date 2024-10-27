@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from signal_generation import parse_input_file
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.interpolate import interp1d
+from QuanTest2 import QuantizationTest2
 def quantize_signal(amplitudes, levels):
     """Quantizes the signal amplitudes to the specified number of levels using range midpoints."""
     min_amp = min(amplitudes)
@@ -17,26 +18,41 @@ def quantize_signal(amplitudes, levels):
 
     # Assign each amplitude to the closest midpoint based on which range it falls into
     quantized_amplitudes = []
-    for amplitude in amplitudes:
+    indices = []
+    for amplitude in amplitudes: 
         # Find the range index the amplitude falls into
         range_index = int((amplitude - min_amp) // delta)
         # Clamp the index to avoid overflow in the case of exact max_amp
         range_index = min(range_index, levels - 1)
         quantized_amplitudes.append(midpoints[range_index])
+        indices.append(range_index + 1)
 
-    return quantized_amplitudes
+    return quantized_amplitudes,indices
 
 def calculate_quantization_error(original_amplitudes, quantized_amplitudes):
     """Calculates the quantization error."""
-    return [original - quantized for original, quantized in zip(original_amplitudes, quantized_amplitudes)]
+    return [ quantized-original for original, quantized in zip(original_amplitudes, quantized_amplitudes)]
+def calc_log(n):
+    n-=1
+    cnt = 0
+    while n > 0:
+        cnt+=1
+        n = n // 2
+    return cnt
+def decimal_to_binary(n,bitcount):
+    if n == 0:
+        return "0".zfill(bitcount)
+    binary = ""
+    while n > 0:
+        binary = str(n % 2) + binary
+        n = n // 2
+    print(bitcount)
+    binary.zfill(bitcount)
+    return binary
 
-def encode_signal(quantized_amplitudes, levels):
-    """Encodes the quantized signal into binary starting from 0 up to n-1."""
-    num_bits = int(np.ceil(np.log2(levels)))  # Calculate bits from levels
-    level_map = {value: i for i, value in enumerate(sorted(set(quantized_amplitudes)))}
-    encoded_signal = [format(level_map[amp], f'0{num_bits}b') for amp in quantized_amplitudes]
-
-    return encoded_signal
+def encode_signal(indices,levels):
+    bitcount = calc_log(levels)
+    return [decimal_to_binary(i-1,bitcount) for i in indices]       
 
 def quantize_and_save_signal(root):
     file_path = filedialog.askopenfilename()
@@ -56,15 +72,18 @@ def quantize_and_save_signal(root):
         levels = int(user_input)
 
     # Quantize the signal
-    quantized_amplitudes = quantize_signal(amplitudes, levels)
+    quantized_amplitudes,indices = quantize_signal(amplitudes, levels)
 
     # Calculate quantization error
     quantization_error = calculate_quantization_error(amplitudes, quantized_amplitudes)
 
     # Encode the quantized signal
-    encoded_signal = encode_signal(quantized_amplitudes, levels)
-
+    encoded_signal = encode_signal(indices,levels)
     # Save results to a file in the requested format
+    compare_file_path = filedialog.askopenfilename()
+    if not compare_file_path:
+            return
+       #     (file_name,Your_IntervalIndices,encoded_signal,quantized_amplitudes,quantization_error)
     save_file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
 
     if save_file_path:
@@ -75,7 +94,9 @@ def quantize_and_save_signal(root):
             file.write(f"{len(indices_or_freqs)}\n")
 
             # Write quantized data: index, encoded value, quantized value, quantization error
-            for i, (index, q_amp, encoded, error) in enumerate(zip(indices_or_freqs, quantized_amplitudes, encoded_signal, quantization_error)):
+            for i, (index, q_amp, encoded, error) in enumerate(zip(indices, quantized_amplitudes, encoded_signal, quantization_error)):
                 file.write(f"{index} {encoded} {q_amp:.3f} {error:.3f}\n")
 
         print(f"Quantized signal, quantization error, and encoded signal saved to {save_file_path}")
+    QuantizationTest2(compare_file_path,indices,encoded_signal,quantized_amplitudes,quantization_error)
+    

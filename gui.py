@@ -1,7 +1,7 @@
 import tkinter as tk
 from signal_generation import generate_signal, plot_signal_from_file
 from adder_subtracter import load_and_process_files
-
+from quantization import quantize_and_save_signal
 # Function to create signal generation interface
 def task_one_interface():
     root = tk.Tk()
@@ -69,5 +69,5 @@ def home_page(root):
     tk.Button(root, text="Upload Signal File",bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: upload_signal_options()).pack(pady=15)
     tk.Button(root, text="Generate Signal", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: task_one_interface()).pack(pady=15)
     tk.Button(root, text="add and sub 2 signals", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: load_and_process_files(root)).pack(pady=15)
-    
+    tk.Button(root, text="quantization", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: quantize_and_save_signal(root)).pack(pady=15)
    
