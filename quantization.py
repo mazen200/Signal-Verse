@@ -5,6 +5,7 @@ from signal_generation import parse_input_file
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.interpolate import interp1d
 from QuanTest2 import QuantizationTest2
+from QuanTest1 import QuantizationTest1
 def quantize_signal(amplitudes, levels):
     """Quantizes the signal amplitudes to the specified number of levels using range midpoints."""
     min_amp = min(amplitudes)
@@ -46,9 +47,8 @@ def decimal_to_binary(n,bitcount):
     while n > 0:
         binary = str(n % 2) + binary
         n = n // 2
-    print(bitcount)
-    binary.zfill(bitcount)
-    return binary
+   # print(bitcount)  
+    return binary.zfill(bitcount)
 
 def encode_signal(indices,levels):
     bitcount = calc_log(levels)
@@ -79,24 +79,35 @@ def quantize_and_save_signal(root):
 
     # Encode the quantized signal
     encoded_signal = encode_signal(indices,levels)
+  #  print(encoded_signal)
     # Save results to a file in the requested format
+
+    # Ask the user for test case
+    user_input = simpledialog.askinteger("Input", "test case one or two (1 or 2)")
+
+   
     compare_file_path = filedialog.askopenfilename()
     if not compare_file_path:
             return
+    
        #     (file_name,Your_IntervalIndices,encoded_signal,quantized_amplitudes,quantization_error)
-    save_file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+   # save_file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
 
-    if save_file_path:
-        with open(save_file_path, 'w') as file:
-            # Write the first three lines (signal_type, is_periodic, n1)
-            file.write(f"{signal_type}\n")
-            file.write(f"{is_periodic}\n")
-            file.write(f"{len(indices_or_freqs)}\n")
+    #if save_file_path:
+     #   with open(save_file_path, 'w') as file:
+      #      # Write the first three lines (signal_type, is_periodic, n1)
+       #     file.write(f"{signal_type}\n")
+        #    file.write(f"{is_periodic}\n")
+         #   file.write(f"{len(indices_or_freqs)}\n")
 
             # Write quantized data: index, encoded value, quantized value, quantization error
-            for i, (index, q_amp, encoded, error) in enumerate(zip(indices, quantized_amplitudes, encoded_signal, quantization_error)):
-                file.write(f"{index} {encoded} {q_amp:.3f} {error:.3f}\n")
+          #  for i, (index, q_amp, encoded, error) in enumerate(zip(indices, quantized_amplitudes, encoded_signal, quantization_error)):
+           #     file.write(f"{index} {encoded} {q_amp:.3f} {error:.3f}\n")
 
-        print(f"Quantized signal, quantization error, and encoded signal saved to {save_file_path}")
-    QuantizationTest2(compare_file_path,indices,encoded_signal,quantized_amplitudes,quantization_error)
+        #print(f"Quantized signal, quantization error, and encoded signal saved to {save_file_path}")
+    if user_input == 1:
+       QuantizationTest1(compare_file_path,encoded_signal,quantized_amplitudes)
+    else:
+        QuantizationTest2(compare_file_path,indices,encoded_signal,quantized_amplitudes,quantization_error)
+    
     
