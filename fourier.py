@@ -80,13 +80,14 @@ def format_number(num):
     """Formats a number to remove unnecessary decimal places if it's an integer."""
     return f"{num:.13f}f" if num != int(num) else f"{int(num)}"
 def plot2(root,freq,amplitudes,title) :
+    omega = 2*np.pi*freq/len(amplitudes)
     disc_window = Toplevel(root)
     disc_window.title(title)
     fig_disc, ax_disc = plt.subplots()
     sample_indices = range(len(amplitudes))
     frequencies = []
     for i in sample_indices :
-        frequencies.append((i+1)*freq)
+        frequencies.append((i+1)*omega)
     k = min(10, len(sample_indices))
     ax_disc.stem(frequencies[:k], amplitudes[:k], linefmt='r--', markerfmt='ro', basefmt='b', label="Discrete Signal")   
     ax_disc.set_xlabel("frequencies")
@@ -172,9 +173,10 @@ def idft(root):
     t =  reconstruct_dft_from_magnitudes_phases(magnitudes, phases)
    # print(t)
     amp = convert(np.array(t),0)
+    print([round(i, 2) for i in amp])
     #print(amp)
-    file_path = filedialog.askopenfilename()
-    if not file_path:
-        return
-    print(SignalSamplesAreEqual(file_path, range(len(amp)), amp))
-    plot(root,amp)
+   # file_path = filedialog.askopenfilename()
+    #if not file_path:
+     #   return
+    #print(SignalSamplesAreEqual(file_path, range(len(amp)), amp))
+    #plot(root,amp)
