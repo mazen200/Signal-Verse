@@ -92,7 +92,7 @@ def ConvTest(Your_indices,Your_samples):
             return
     print("Conv Test case passed successfully")
 
-def Compare_Signals(file_name,Your_indices,Your_samples):      
+def corrtest(file_name,Your_indices,Your_samples):      
     expected_indices=[]
     expected_samples=[]
     with open(file_name, 'r') as f:
