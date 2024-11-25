@@ -3,7 +3,9 @@ from signal_generation import generate_signal, plot_signal_from_file
 from adder_subtracter import load_and_process_files
 from quantization import quantize_and_save_signal
 from fourier import dft, idft
-
+from shiftAndFold import sfrun
+from DerivativeSignal import DerivativeSignal
+from dct import dctrun
 # Function to create signal generation interface
 def task_one_interface():
     root = tk.Tk()
@@ -63,15 +65,34 @@ def upload_signal_options():
     tk.Button(root, text="accumlate",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,4)).pack(pady=10)
 # Function to show the home page
 def home_page(root):
+
     for widget in root.winfo_children():
         widget.destroy()
 
     welcome_label = tk.Label(root, text="Welcome to Visualizer", bg="#1569C7", fg="white", font=("Helvetica", 24))
-    welcome_label.pack(pady=50, fill=tk.X)
-    tk.Button(root, text="Upload Signal File",bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: upload_signal_options()).pack(pady=15)
-    tk.Button(root, text="Generate Signal", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: task_one_interface()).pack(pady=15)
-    tk.Button(root, text="add and sub 2 signals", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: load_and_process_files(root)).pack(pady=15)
-    tk.Button(root, text="quantization", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: quantize_and_save_signal(root)).pack(pady=15)
-    tk.Button(root, text="DFT", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: dft(root)).pack(pady=15)
-    tk.Button(root, text="IDFT", bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=lambda: idft(root)).pack(pady=15)
+    welcome_label.pack(pady=20, fill=tk.X)
+
+    button_frame = tk.Frame(root, bg="#1569C7")
+    button_frame.pack(pady=20)
+
+    buttons = [
+        ("Upload Signal File", lambda: upload_signal_options()),
+        ("Generate Signal", lambda: task_one_interface()),
+        ("Add and Sub 2 Signals", lambda: load_and_process_files(root)),
+        ("Quantization", lambda: quantize_and_save_signal(root)),
+        ("DFT", lambda: dft(root)),
+        ("IDFT", lambda: idft(root)),
+        ("Shift and Fold", lambda: sfrun(root)),
+        ("Derivative Signal", lambda: DerivativeSignal(root)),
+        ("DCT", lambda: dctrun(root)),
+    ]
+
+    for i, (text, command) in enumerate(buttons):
+        tk.Button(
+            button_frame, text=text, bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=command
+        ).grid(row=i // 3, column=i % 3, padx=10, pady=10, sticky="ew")
+
+    for col in range(3):
+        button_frame.grid_columnconfigure(col, weight=1)
+   
    
