@@ -6,7 +6,7 @@ from fourier import dft, idft
 from shiftAndFold import sfrun
 from DerivativeSignal import DerivativeSignal
 from dct import dctrun
-from task6 import runCorr
+from task6 import runCorr,runConv
 # Function to create signal generation interface
 def task_one_interface():
     root = tk.Tk()
@@ -86,7 +86,8 @@ def home_page(root):
         ("Shift and Fold", lambda: sfrun(root)),
         ("Derivative Signal", lambda: DerivativeSignal(root)),
         ("DCT", lambda: dctrun(root)),
-        ("correlation", lambda: runCorr(root))
+        ("correlation", lambda: runCorr(root)),
+        ("Convolution",lambda:runConv(root))
     ]
 
     for i, (text, command) in enumerate(buttons):

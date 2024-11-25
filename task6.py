@@ -44,7 +44,7 @@ def remove_dc_frequency(signal):
     
     return reconstructed_signal
 
-def convolve_signals(signal1, signal2):
+def convolve_signals(it1,signal1,it2, signal2):
     """
     Computes the convolution of two signals.
     """
@@ -52,13 +52,12 @@ def convolve_signals(signal1, signal2):
     N2 = len(signal2)
     result_length = N1 + N2 - 1
     result = [0] * result_length
-    
-    for i in range(result_length):
-        for j in range(N1):
-            if 0 <= i - j < N2:
-                result[i] += signal1[j] * signal2[i - j]
-    
-    return result
+    indices = [0] * result_length
+    for i in range(N1):
+        for j in range(N2):
+            result[i+j]  +=signal1[i] * signal2[j]
+            indices[i+j] = it1[i] + it2[j]
+    return indices,result
 
 def normalized_cross_correlation(signal1, signal2):
     """
@@ -96,7 +95,19 @@ def runCorr(root) :
     if not file_path:
          return   
     corrtest(file_path,range(len(ans)),ans)
-
+# convolution 
+def runConv(root) :
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+         return 
+   
+    signal_type, is_periodic, indices_or_freqs, amplitudes, phase_shifts = parse_input_file(file_path)
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+       return    
+    signal_type2, is_periodic2, indices_or_freqs2, amplitudes2, phase_shifts2 = parse_input_file(file_path)
+    indices,result =convolve_signals(indices_or_freqs,amplitudes,indices_or_freqs2, amplitudes2)
+    ConvTest(indices,result)
 
 
 
