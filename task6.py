@@ -32,13 +32,13 @@ def remove_dc_frequency(signal):
     """
     # Compute DFT
     N = len(signal)
-    dft_result = convert(signal,1)
+    result, magnitudes, phases = convert(signal,1)
     
     # Set the DC component (first element) to 0
-    dft_result[0] = 0
+    result[0] = 0
     
     # Perform IDFT to get back the time-domain signal
-    reconstructed_signal = convert(dft_result, 0)
+    reconstructed_signal = convert(result, 0)
     
     return reconstructed_signal
 
@@ -117,6 +117,21 @@ def runMovAvg(root) :
     constant = simpledialog.askinteger("Input", "enter widow size")
     
     ans = moving_average(amplitudes, constant)
+##print(ans)
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+         return   
+    print(ans)
+    SignalSamplesAreEqual(file_path,range(len(ans)),ans)
+
+def runDC(root) :
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+         return 
+   
+    signal_type, is_periodic, indices_or_freqs, amplitudes, phase_shifts = parse_input_file(file_path)
+    
+    ans = remove_dc_frequency(amplitudes)
 ##print(ans)
     file_path = filedialog.askopenfilename()
     if not file_path:

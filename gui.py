@@ -6,7 +6,7 @@ from fourier import dft, idft
 from shiftAndFold import sfrun
 from DerivativeSignal import DerivativeSignal
 from dct import dctrun
-from task6 import runCorr,runConv,runMovAvg
+from task6 import runCorr,runConv,runMovAvg,runDC
 # Function to create signal generation interface
 def task_one_interface():
     root = tk.Tk()
@@ -88,7 +88,9 @@ def home_page(root):
         ("DCT", lambda: dctrun(root)),
         ("correlation", lambda: runCorr(root)),
         ("Convolution",lambda:runConv(root)),
-        ("moving average",lambda:runMovAvg(root))
+        ("moving average",lambda:runMovAvg(root)),
+        ("Remove DC component",lambda:runDC(root))
+
         
     ]
 
