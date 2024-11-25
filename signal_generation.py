@@ -139,8 +139,7 @@ def plot_signal_from_file(root,num):
     cubic_interpolation_model = interp1d(indices_or_freqs, amplitudes, kind = "cubic")
     x_cubic = np.linspace(min(indices_or_freqs), max(indices_or_freqs), 500)
     y_cubic = cubic_interpolation_model(x_cubic)
-    if signal_type == 0:
-        ax_cont.plot(x_cubic, y_cubic, label="Continuous Signal")
+    ax_cont.plot(x_cubic, y_cubic, label="Continuous Signal")
 
     ax_cont.set_xlabel("Time" if signal_type == 0 else "Frequency")
     ax_cont.set_ylabel("Amplitude")
