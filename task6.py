@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from signal_generation import parse_input_file
-from comparesignals import SignalSamplesAreEqual
+from comparesignals import SignalSamplesAreEqual,ConvTest,corrtest
 from fourier import convert
 def moving_average(signal, window_size):
     """
@@ -65,16 +65,38 @@ def normalized_cross_correlation(signal1, signal2):
     Computes the normalized cross-correlation of two signals.
     """
     N = len(signal1)
-    mean1 = sum(signal1) / N
-    mean2 = sum(signal2) / N
-    
-    numerator = sum((signal1[i] - mean1) * (signal2[i] - mean2) for i in range(N))
-    denominator = (
-        (sum((signal1[i] - mean1) ** 2 for i in range(N)) * 
-         sum((signal2[i] - mean2) ** 2 for i in range(N))) ** 0.5
-    )
-    
-    return numerator / denominator if denominator != 0 else 0
+
+   # Pre-compute squared sums for normalization
+    X1_squared_sum = np.sum(i**2 for i in signal1)
+    X2_squared_sum = np.sum(i**2 for i in signal2)
+    normalization = np.sqrt(X1_squared_sum * X2_squared_sum)
+
+   
+    r12 = []
+    for j in range(N):
+         numerator = sum(signal1[i] * signal2[(i + j) % N] for i in range(N))  
+         r12.append(numerator / normalization)
+    return r12
+        
+
+## correlation
+def runCorr(root) :
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+         return 
+   
+    signal_type, is_periodic, indices_or_freqs, amplitudes, phase_shifts = parse_input_file(file_path)
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+       return    
+    signal_type2, is_periodic2, indices_or_freqs2, amplitudes2, phase_shifts2 = parse_input_file(file_path)
+    ans = normalized_cross_correlation(amplitudes, amplitudes2)
+##print(ans)
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+         return   
+    corrtest(file_path,range(len(ans)),ans)
+
 
 
 
