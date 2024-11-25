@@ -1,5 +1,5 @@
 import numpy as np
-from tkinter import filedialog, Toplevel, Tk
+from tkinter import filedialog, Toplevel , messagebox, simpledialog,Tk
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -10,16 +10,14 @@ def moving_average(signal, window_size):
     """
     Compute moving average y(n) for signal x(n) with the specified window size.
     """
-    smoothed_signal = []
     N = len(signal)
+    result = np.zeros(N - window_size + 1)
     
-    for i in range(N):
-        start_index = max(0, i - window_size // 2)
-        end_index = min(N, i + window_size // 2 + 1)
-        window = signal[start_index:end_index]
-        smoothed_signal.append(sum(window) / len(window))
-    
-    return smoothed_signal
+    for i in range(len(result)):
+        result[i] = np.sum(signal[i:i+window_size]) / window_size
+            
+    result = [round(i) for i in result]
+    return result
 
 def remove_dc_time(signal):
     """
@@ -109,5 +107,20 @@ def runConv(root) :
     indices,result =convolve_signals(indices_or_freqs,amplitudes,indices_or_freqs2, amplitudes2)
     ConvTest(indices,result)
 
-
+## mov average
+def runMovAvg(root) :
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+         return 
+   
+    signal_type, is_periodic, indices_or_freqs, amplitudes, phase_shifts = parse_input_file(file_path)
+    constant = simpledialog.askinteger("Input", "enter widow size")
+    
+    ans = moving_average(amplitudes, constant)
+##print(ans)
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+         return   
+    print(ans)
+    SignalSamplesAreEqual(file_path,range(len(ans)),ans)
 
