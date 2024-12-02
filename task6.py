@@ -6,6 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from signal_generation import parse_input_file
 from comparesignals import SignalSamplesAreEqual,ConvTest,corrtest
 from fourier import convert
+from dct import plot
 def moving_average(signal, window_size):
     """
     Compute moving average y(n) for signal x(n) with the specified window size.
@@ -138,4 +139,5 @@ def runDC(root) :
          return   
     print(ans)
     SignalSamplesAreEqual(file_path,range(len(ans)),ans)
+    plot(root,ans,"DC output")
 
