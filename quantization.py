@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 from signal_generation import parse_input_file
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.interpolate import interp1d
-from QuanTest2 import QuantizationTest2
-from QuanTest1 import QuantizationTest1
+from QuanTest import QuantizationTest1,QuantizationTest2
 def quantize_signal(amplitudes, levels):
     """Quantizes the signal amplitudes to the specified number of levels using range midpoints."""
     min_amp = min(amplitudes)
