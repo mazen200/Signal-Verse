@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from signal_generation import generate_signal, plot_signal_from_file
 from adder_subtracter import load_and_process_files
 from quantization import quantize_and_save_signal
@@ -6,100 +7,175 @@ from fourier import dft, idft
 from shiftAndFold import sfrun
 from DerivativeSignal import DerivativeSignal
 from dct import dctrun
-from task6 import runCorr,runConv,runMovAvg,runDC
-# Function to create signal generation interface
-def task_one_interface():
-    root = tk.Tk()
-    root.title("Signal Visualizer")
-    root.geometry("400x550")
-    root.configure(bg="#1569C7")
-    for widget in root.winfo_children():
-        widget.destroy()
+from task6 import runCorr, runConv, runMovAvg, runDC
 
-    root.configure(bg="white")  # Set the background color to white
 
-    left_frame = tk.Frame(root, bg="white")  # Change frame background to white
-    left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+class SignalVisualizerApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Signal Verse")
+        self.geometry("1000x600")
+        self.configure(bg="#F7F9FC")  # Soft Gray Background
 
-    # Labels with the same color as buttons
-    tk.Label(left_frame, text="Amplitude (A):", bg="white", fg="#1569C7", font=("Helvetica", 12)).pack(pady=10)
-    amplitude_entry = tk.Entry(left_frame)
-    amplitude_entry.pack(pady=5)
+        self.style = ttk.Style(self)
+        self._set_theme()
 
-    tk.Label(left_frame, text="Phase Shift (θ in radians):", bg="white", fg="#1569C7", font=("Helvetica", 12)).pack(pady=10)
-    phase_entry = tk.Entry(left_frame)
-    phase_entry.pack(pady=5)
+        self._create_layout()
 
-    tk.Label(left_frame, text="Analog Frequency (Hz):", bg="white", fg="#1569C7", font=("Helvetica", 12)).pack(pady=10)
-    analog_freq_entry = tk.Entry(left_frame)
-    analog_freq_entry.pack(pady=5)
+    def _set_theme(self):
+        """Set the ttk theme and style."""
+        self.style.theme_use("clam")
 
-    tk.Label(left_frame, text="Sampling Frequency (Hz):", bg="white", fg="#1569C7", font=("Helvetica", 12)).pack(pady=10)
-    sampling_freq_entry = tk.Entry(left_frame)
-    sampling_freq_entry.pack(pady=5)
+        # Frame Styling
+        self.style.configure("TFrame", background="#F7F9FC")
+        self.style.configure("Sidebar.TFrame", background="#2C3E50")
 
-    tk.Label(left_frame, text="Signal Type:", bg="white", fg="#1569C7", font=("Helvetica", 12)).pack(pady=10)
-    signal_type_var = tk.IntVar(value=0)
-    tk.Radiobutton(left_frame, text="Sine", variable=signal_type_var, value=0, bg="white", fg="#1569C7").pack()
-    tk.Radiobutton(left_frame, text="Cosine", variable=signal_type_var, value=1, bg="white", fg="#1569C7").pack()
-    
-    tk.Label(left_frame, text="compare with file ?", bg="white", fg="#1569C7", font=("Helvetica", 12)).pack(pady=10)
-    cmpbool = tk.IntVar(value=0)
-    tk.Radiobutton(left_frame, text="NO", variable=cmpbool, value=0, bg="white", fg="#1569C7").pack()
-    tk.Radiobutton(left_frame, text="YES", variable=cmpbool, value=1, bg="white", fg="#1569C7").pack()
+        # Button Styling
+        self.style.configure(
+            "TButton",
+            background="#3498DB",
+            foreground="white",
+            font=("Helvetica", 12),
+            borderwidth=0,
+            padding=6,
+        )
+        self.style.map(
+            "TButton",
+            background=[("active", "#5DADE2"), ("pressed", "#3498DB")],
+        )
 
-    generate_button = tk.Button(left_frame, text="Generate Signal", bg="#1569C7", fg="white", font=("Helvetica", 12),
-                                command=lambda: generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var,cmpbool, root))
-    generate_button.pack(pady=20)   
+        # Label Styling
+        self.style.configure(
+            "TLabel",
+            background="#F7F9FC",
+            foreground="#2C3E50",
+            font=("Helvetica", 12),
+        )
+        self.style.configure(
+            "Title.TLabel",
+            font=("Helvetica", 16, "bold"),
+            background="#F7F9FC",
+            foreground="#2C3E50",
+        )
+        self.style.configure(
+            "Sidebar.TLabel",
+            font=("Helvetica", 14, "bold"),
+            background="#2C3E50",
+            foreground="white",
+        )
 
-# Function to create signal generation interface
-def upload_signal_options():
-    root = tk.Tk()
-    root.title("upload_signal_options")
-    root.configure(bg="#E7DECC")
-    for widget in root.winfo_children():
-        widget.destroy()
-    tk.Button(root, text="only draw Signal",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,0)).pack(pady=10)
-    tk.Button(root, text="multiply",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,1)).pack(pady=10)
-    tk.Button(root, text="normalize",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,2)).pack(pady=10)
-    tk.Button(root, text="square",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,3)).pack(pady=10)
-    tk.Button(root, text="accumlate",bg="#1569C7", fg="#E7DECC", font=("Helvetica", 12), command=lambda: plot_signal_from_file(root,4)).pack(pady=10)
-# Function to show the home page
-def home_page(root):
+    def _create_layout(self):
+        # Sidebar for navigation
+        self.sidebar = ttk.Frame(self, style="Sidebar.TFrame", width=200)
+        self.sidebar.pack(side="left", fill="y", padx=5, pady=5)
 
-    for widget in root.winfo_children():
-        widget.destroy()
+        self.main_frame = ttk.Frame(self, style="TFrame")
+        self.main_frame.pack(side="right", fill="both", expand=True, padx=5, pady=5)
 
-    welcome_label = tk.Label(root, text="Welcome to Visualizer", bg="#1569C7", fg="white", font=("Helvetica", 24))
-    welcome_label.pack(pady=20, fill=tk.X)
+        # Sidebar Header
+        ttk.Label(
+            self.sidebar, text="Signal Verse", style="Sidebar.TLabel"
+        ).pack(pady=10)
 
-    button_frame = tk.Frame(root, bg="#1569C7")
-    button_frame.pack(pady=20)
+        # Sidebar Buttons
+        self._add_sidebar_button("Home", self.show_home_page)
+        self._add_sidebar_button("Generate Signal", self.show_generate_signal)
+        self._add_sidebar_button("Upload File Options", self.show_upload_options)
+        self._add_sidebar_button("Add/Sub Signals", lambda: load_and_process_files(self))
+        self._add_sidebar_button("Quantization", lambda: quantize_and_save_signal(self))
+        self._add_sidebar_button("DFT", lambda: dft(self))
+        self._add_sidebar_button("IDFT", lambda: idft(self))
+        self._add_sidebar_button("Shift and Fold", lambda: sfrun(self))
+        self._add_sidebar_button("Derivative Signal", lambda: DerivativeSignal(self))
+        self._add_sidebar_button("DCT", lambda: dctrun(self))
+        self._add_sidebar_button("Correlation", lambda: runCorr(self))
+        self._add_sidebar_button("Convolution", lambda: runConv(self))
+        self._add_sidebar_button("Moving Avg", lambda: runMovAvg(self))
+        self._add_sidebar_button("Remove DC", lambda: runDC(self))
 
-    buttons = [
-        ("Upload Signal File", lambda: upload_signal_options()),
-        ("Generate Signal", lambda: task_one_interface()),
-        ("Add and Sub 2 Signals", lambda: load_and_process_files(root)),
-        ("Quantization", lambda: quantize_and_save_signal(root)),
-        ("DFT", lambda: dft(root)),
-        ("IDFT", lambda: idft(root)),
-        ("Shift and Fold", lambda: sfrun(root)),
-        ("Derivative Signal", lambda: DerivativeSignal(root)),
-        ("DCT", lambda: dctrun(root)),
-        ("correlation", lambda: runCorr(root)),
-        ("Convolution",lambda:runConv(root)),
-        ("moving average",lambda:runMovAvg(root)),
-        ("Remove DC component",lambda:runDC(root))
+        # Initialize with the home page
+        self.show_home_page()
 
-        
-    ]
+    def _add_sidebar_button(self, text, command):
+        """Helper to add buttons to the sidebar."""
+        button = ttk.Button(self.sidebar, text=text, style="TButton", command=command)
+        button.pack(fill="x", pady=5, padx=10)
 
-    for i, (text, command) in enumerate(buttons):
-        tk.Button(
-            button_frame, text=text, bg="#E7DECC", fg="#1569C7", font=("Helvetica", 12), command=command
-        ).grid(row=i // 3, column=i % 3, padx=10, pady=10, sticky="ew")
+    def show_home_page(self):
+        """Display the home page."""
+        self._clear_main_frame()
+        ttk.Label(self.main_frame, text="Welcome to the Signal Verse", style="Title.TLabel").pack(pady=20)
+        ttk.Label(
+            self.main_frame,
+            text="Navigate through the sidebar to access various features.",
+            style="TLabel",
+        ).pack(pady=10)
 
-    for col in range(3):
-        button_frame.grid_columnconfigure(col, weight=1)
-   
-   
+    def show_generate_signal(self):
+        """Generate Signal Interface."""
+        self._clear_main_frame()
+        ttk.Label(self.main_frame, text="Generate Signal", style="Title.TLabel").pack(pady=10)
+
+        fields = {
+            "Amplitude (A)": tk.StringVar(),
+            "Phase Shift (θ in radians)": tk.StringVar(),
+            "Analog Frequency (Hz)": tk.StringVar(),
+            "Sampling Frequency (Hz)": tk.StringVar(),
+        }
+
+        for label, var in fields.items():
+            frame = ttk.Frame(self.main_frame)
+            frame.pack(fill="x", pady=5)
+            ttk.Label(frame, text=label, width=25, anchor="w", style="TLabel").pack(side="left", padx=5)
+            ttk.Entry(frame, textvariable=var).pack(side="left", fill="x", expand=True, padx=5)
+
+        signal_type = tk.IntVar(value=0)
+        frame = ttk.Frame(self.main_frame)
+        frame.pack(fill="x", pady=5)
+        ttk.Label(frame, text="Signal Type:", width=25, anchor="w", style="TLabel").pack(side="left", padx=5)
+        ttk.Radiobutton(frame, text="Sine", variable=signal_type, value=0).pack(side="left")
+        ttk.Radiobutton(frame, text="Cosine", variable=signal_type, value=1).pack(side="left")
+
+        ttk.Button(
+            self.main_frame,
+            text="Generate",
+            command=lambda: generate_signal(
+                fields["Amplitude (A)"].get(),
+                fields["Phase Shift (θ in radians)"].get(),
+                fields["Analog Frequency (Hz)"].get(),
+                fields["Sampling Frequency (Hz)"].get(),
+                signal_type,
+                None,
+                self,
+            ),
+        ).pack(pady=20)
+
+    def show_upload_options(self):
+        """File Upload Options Interface."""
+        self._clear_main_frame()
+        ttk.Label(self.main_frame, text="Upload Signal Options", style="Title.TLabel").pack(pady=10)
+
+        options = [
+            ("Draw Signal", 0),
+            ("Multiply", 1),
+            ("Normalize", 2),
+            ("Square", 3),
+            ("Accumulate", 4),
+        ]
+
+        for label, option in options:
+            ttk.Button(
+                self.main_frame,
+                text=label,
+                command=lambda opt=option: plot_signal_from_file(self, opt),
+            ).pack(fill="x", pady=5, padx=20)
+
+    def _clear_main_frame(self):
+        """Clear all widgets from the main frame."""
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+
+if __name__ == "__main__":
+    app = SignalVisualizerApp()
+    app.mainloop()
