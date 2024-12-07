@@ -83,6 +83,7 @@ class SignalVisualizerApp(tk.Tk):
         self._add_sidebar_button("Upload File Options", self.show_upload_options)
         self._add_sidebar_button("Add/Sub Signals", lambda: load_and_process_files(self))
         self._add_sidebar_button("Quantization", lambda: quantize_and_save_signal(self))
+        self._add_sidebar_button("FIR Filter", self.show_filter_designer)
         self._add_sidebar_button("DFT", lambda: dft(self))
         self._add_sidebar_button("IDFT", lambda: idft(self))
         self._add_sidebar_button("Shift and Fold", lambda: sfrun(self))
@@ -169,7 +170,40 @@ class SignalVisualizerApp(tk.Tk):
                 text=label,
                 command=lambda opt=option: plot_signal_from_file(self, opt),
             ).pack(fill="x", pady=5, padx=20)
+    def show_filter_designer(self):
+        """Filter Designer Interface."""
+        self._clear_main_frame()
+        ttk.Label(self.main_frame, text="FIR Filter Designer", style="Title.TLabel").pack(pady=10)
 
+        fields = {
+        "Sampling Frequency (Hz)": tk.StringVar(),
+        "Filter Type (lowpass/highpass/bandpass/bandstop)": tk.StringVar(),
+        "Cutoff Frequency (Hz)": tk.StringVar(),
+        "Cutoff Frequency 1 (Hz) [For Band Filters]": tk.StringVar(),
+        "Cutoff Frequency 2 (Hz) [For Band Filters]": tk.StringVar(),
+        "Transition Bandwidth (Hz)": tk.StringVar(),
+        "Stopband Attenuation (dB)": tk.StringVar(),
+        }
+
+        for label, var in fields.items():
+            frame = ttk.Frame(self.main_frame)
+            frame.pack(fill="x", pady=5)
+            ttk.Label(frame, text=label, width=40, anchor="w", style="TLabel").pack(side="left", padx=5)
+            ttk.Entry(frame, textvariable=var).pack(side="left", fill="x", expand=True, padx=5)
+
+        ttk.Button(
+            self.main_frame,
+             text="Generate Filter",
+            command=lambda: self.generate_filter(
+            fields["Sampling Frequency (Hz)"].get(),
+            fields["Filter Type (lowpass/highpass/bandpass/bandstop)"].get(),
+            fields["Cutoff Frequency (Hz)"].get(),
+            fields["Cutoff Frequency 1 (Hz) [For Band Filters]"].get(),
+            fields["Cutoff Frequency 2 (Hz) [For Band Filters]"].get(),
+            fields["Transition Bandwidth (Hz)"].get(),
+            fields["Stopband Attenuation (dB)"].get(),
+            ),
+            ).pack(pady=20)
     def _clear_main_frame(self):
         """Clear all widgets from the main frame."""
         for widget in self.main_frame.winfo_children():
