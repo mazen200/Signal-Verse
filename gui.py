@@ -8,7 +8,7 @@ from shiftAndFold import sfrun
 from DerivativeSignal import DerivativeSignal
 from dct import dctrun
 from task6 import runCorr, runConv, runMovAvg, runDC
-
+from firresample import run_filter
 
 class SignalVisualizerApp(tk.Tk):
     def __init__(self):
@@ -173,28 +173,35 @@ class SignalVisualizerApp(tk.Tk):
     def show_filter_designer(self):
         """Filter Designer Interface."""
         self._clear_main_frame()
-        ttk.Label(self.main_frame, text="FIR Filter Designer", style="Title.TLabel").pack(pady=10)
+        ttk.Label(self.main_frame, text="FIR Filter", style="Title.TLabel").pack(pady=10)
 
         fields = {
-        "Sampling Frequency (Hz)": tk.StringVar(),
         "Filter Type (lowpass/highpass/bandpass/bandstop)": tk.StringVar(),
+        "Sampling Frequency (Hz)": tk.StringVar(),
         "Cutoff Frequency (Hz)": tk.StringVar(),
         "Cutoff Frequency 1 (Hz) [For Band Filters]": tk.StringVar(),
         "Cutoff Frequency 2 (Hz) [For Band Filters]": tk.StringVar(),
         "Transition Bandwidth (Hz)": tk.StringVar(),
         "Stopband Attenuation (dB)": tk.StringVar(),
         }
-
+        """FilterType = Low pass
+FS = 8000
+StopBandAttenuation = 50
+FC = 1500
+TransitionBand = 500"""
         for label, var in fields.items():
             frame = ttk.Frame(self.main_frame)
             frame.pack(fill="x", pady=5)
             ttk.Label(frame, text=label, width=40, anchor="w", style="TLabel").pack(side="left", padx=5)
             ttk.Entry(frame, textvariable=var).pack(side="left", fill="x", expand=True, padx=5)
+# Button Frame for Generate Filter and Upload Signal
+        button_frame = ttk.Frame(self.main_frame)
+        button_frame.pack(pady=20)
 
         ttk.Button(
-            self.main_frame,
+             button_frame,
              text="Generate Filter",
-            command=lambda: self.generate_filter(
+            command=lambda: run_filter(self,0,
             fields["Sampling Frequency (Hz)"].get(),
             fields["Filter Type (lowpass/highpass/bandpass/bandstop)"].get(),
             fields["Cutoff Frequency (Hz)"].get(),
@@ -203,7 +210,21 @@ class SignalVisualizerApp(tk.Tk):
             fields["Transition Bandwidth (Hz)"].get(),
             fields["Stopband Attenuation (dB)"].get(),
             ),
-            ).pack(pady=20)
+            ).pack(side="left",padx=10)
+
+        ttk.Button(
+        button_frame,
+        text="apply filter on Signal",
+        command=lambda: run_filter(self,1,
+            fields["Sampling Frequency (Hz)"].get(),
+            fields["Filter Type (lowpass/highpass/bandpass/bandstop)"].get(),
+            fields["Cutoff Frequency (Hz)"].get(),
+            fields["Cutoff Frequency 1 (Hz) [For Band Filters]"].get(),
+            fields["Cutoff Frequency 2 (Hz) [For Band Filters]"].get(),
+            fields["Transition Bandwidth (Hz)"].get(),
+            fields["Stopband Attenuation (dB)"].get(),
+            ),
+            ).pack(side="left",padx=30)
     def _clear_main_frame(self):
         """Clear all widgets from the main frame."""
         for widget in self.main_frame.winfo_children():
