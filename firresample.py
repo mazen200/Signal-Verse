@@ -90,6 +90,7 @@ def calculate_FIR(sampling_freq, filter_type, cutoff_freq, cutoff1, cutoff2, tra
         elif filter_type == "Band stop":
             f1 = (cutoff1 + transition_band / 2) / sampling_freq
             f2 = (cutoff2 - transition_band / 2) / sampling_freq
+            
         deltaF = transition_band / sampling_freq
         window = getWindowFunction(stopband_atten)
         N = getCoeffNumber(window, deltaF)
@@ -130,3 +131,75 @@ def run_filter(root,check, sampling_freq, filter_type, cutoff_freq, cutoff1, cut
         SignalSamplesAreEqual(file_path, indi,ans)
         plot(root,ans,"Filterd signal")
 
+def remove_edge_zeros(x,lst):
+    if not lst:
+        return lst
+    
+    start = 0
+    end = len(lst)
+    
+    while start < len(lst) and lst[start] == 0:
+        start += 1
+    while end > 0 and lst[end - 1] == 0:
+        end -= 1
+    return x[start:end] ,lst[start:end]
+
+def run_sampling(root,L,M):
+    M = int(M)
+    L = int(L)
+    #FilterType = Low pass
+    # fs = 8000
+    # StopBandAttenuation = 50
+    # FC = 1500
+    # TransitionBand = 500
+    ind , coff  = calculate_FIR(8000, 'Low pass', 1500, 0,0, 500, 50)
+    file_path = filedialog.askopenfilename()
+    if not file_path:
+        return
+    signal_type, is_periodic, indices_or_freqs, amplitudes, phase_shifts = parse_input_file(file_path)
+    compare_file_path = filedialog.askopenfilename()
+    if not compare_file_path:
+        return
+    if L != 0 and M == 0:
+            upsampled_signal = []
+            for sample in amplitudes:
+                upsampled_signal.append(sample)  
+                upsampled_signal.extend([0] * (L - 1)) 
+            new_indices = [i for i in range(indices_or_freqs[0], len(upsampled_signal)-abs(indices_or_freqs[0]))]
+            
+            y = upsampled_signal
+            x = new_indices
+            x,y = remove_edge_zeros(x,y)
+            x ,y = convolve_signals(x,y,ind,coff)
+            SignalSamplesAreEqual(compare_file_path, x,y)
+            plot(root,y,"Upsampling signal")
+        # sampling down
+    elif L == 0 and M != 0:
+            indices_or_freqs,amplitudes =remove_edge_zeros(indices_or_freqs,amplitudes)
+            x ,y = convolve_signals(indices_or_freqs,amplitudes,ind,coff)
+            
+            n = int(len(x[::M]))
+            x = [i for i in range(int(x[0]), n - abs(int(x[0])))]
+            downsampled_signal =y[::M]
+            y = downsampled_signal
+            SignalSamplesAreEqual(compare_file_path, x,y)
+            plot(root,y,"Downsampling signal")
+
+        # sampling up then sampling down
+    elif L != 0 and M != 0:
+            upsampled_signal = []
+            for sample in amplitudes:
+                upsampled_signal.append(sample)  
+                upsampled_signal.extend([0] * (L - 1)) 
+            new_indices = [i for i in range(indices_or_freqs[0], len(upsampled_signal)-abs(indices_or_freqs[0]))]
+            
+            x = new_indices
+            y = upsampled_signal
+            
+            x,y = remove_edge_zeros(x,y)
+            x ,y = convolve_signals(x,y,ind,coff)
+            y = y[::M]
+            n = int(len(x[::M]))
+            x = [i for i in range(int(x[0]), n - abs(int(x[0])))]
+            SignalSamplesAreEqual(compare_file_path, x,y)
+            plot(root,y,"ReSampling signal")
