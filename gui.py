@@ -173,9 +173,9 @@ class SignalVisualizerApp(tk.Tk):
     def show_filter_designer(self):
         """Filter Designer Interface."""
         self._clear_main_frame()
-        ttk.Label(self.main_frame, text="FIR Filter", style="Title.TLabel").pack(pady=10)
+        ttk.Label(self.main_frame, text="FIR Filter Designer", style="Title.TLabel").pack(pady=10)
 
-        fields = {
+        fields = {      
         "Filter Type (lowpass/highpass/bandpass/bandstop)": tk.StringVar(),
         "Sampling Frequency (Hz)": tk.StringVar(),
         "Cutoff Frequency (Hz)": tk.StringVar(),
@@ -184,16 +184,22 @@ class SignalVisualizerApp(tk.Tk):
         "Transition Bandwidth (Hz)": tk.StringVar(),
         "Stopband Attenuation (dB)": tk.StringVar(),
         }
-        """FilterType = Low pass
-FS = 8000
-StopBandAttenuation = 50
-FC = 1500
-TransitionBand = 500"""
+
         for label, var in fields.items():
             frame = ttk.Frame(self.main_frame)
             frame.pack(fill="x", pady=5)
-            ttk.Label(frame, text=label, width=40, anchor="w", style="TLabel").pack(side="left", padx=5)
-            ttk.Entry(frame, textvariable=var).pack(side="left", fill="x", expand=True, padx=5)
+
+            if label == "Filter Type (lowpass/highpass/bandpass/bandstop)":
+            # استخدم Combobox بدلاً من Entry لاختيار نوع الفلتر
+                ttk.Label(frame, text=label, width=40, anchor="w", style="TLabel").pack(side="left", padx=5)
+                filter_options = ["Low pass", "High pass", "Band pass", "Band stop"]
+                filter_combobox = ttk.Combobox(frame, textvariable=var, values=filter_options, state="readonly")
+                filter_combobox.pack(side="left", fill="x", expand=True, padx=5)
+            else:
+                ttk.Label(frame, text=label, width=40, anchor="w", style="TLabel").pack(side="left", padx=5)
+                ttk.Entry(frame, textvariable=var).pack(side="left", fill="x", expand=True, padx=5)
+
+
 # Button Frame for Generate Filter and Upload Signal
         button_frame = ttk.Frame(self.main_frame)
         button_frame.pack(pady=20)
