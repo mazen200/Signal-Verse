@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 from comparesignals import SignalSamplesAreEqual
 from tkinter import Toplevel, messagebox, filedialog , simpledialog
 import math
+from signal_generation import parse_input_file
+from DerivativeSignal import plot
+from task6 import convolve_signals
 # Reinitialize Parameters for Verification
 Fs = 8000  # Sampling Frequency
 Fc = 1500  # Cutoff Frequency (Hz)
@@ -106,9 +109,24 @@ def calculate_FIR(sampling_freq, filter_type, cutoff_freq, cutoff1, cutoff2, tra
 def run_filter(root,check, sampling_freq, filter_type, cutoff_freq, cutoff1, cutoff2, transition_band, stopband_atten):
     # check = 1 signal
     #check = 0 no signal
+    if check == 1:
+        file_path = filedialog.askopenfilename()
+        if not file_path:
+           return
+        signal_type, is_periodic, indices_or_freqs, amplitudes, phase_shifts = parse_input_file(file_path)
+
     ind , coff  = calculate_FIR(int(sampling_freq), filter_type, int(cutoff_freq), int(cutoff1),int( cutoff2), int(transition_band), int(stopband_atten))
     if check == 0 :
         file_path = filedialog.askopenfilename()
         if not file_path:
             return
         SignalSamplesAreEqual(file_path, ind, coff)
+        plot(root,coff,"FIR coffecients")
+    else :
+        indi,ans = convolve_signals(indices_or_freqs, amplitudes,ind, coff)
+        file_path = filedialog.askopenfilename()
+        if not file_path:
+            return
+        SignalSamplesAreEqual(file_path, indi,ans)
+        plot(root,ans,"Filterd signal")
+
