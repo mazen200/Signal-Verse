@@ -30,13 +30,13 @@ The application offers the following functionalities:
 - **FIR Filter Designer**: Design low-pass, high-pass, band-pass, or band-stop FIR filters with user-defined parameters.
 - **Apply Filters**: Apply the designed filter to uploaded signals.
 - **Resampling**: Perform upsampling and downsampling on signals with customizable factors.
-- 
+ 
 ### Derivative and Statistical Analysis:
 - **Derivative Signal**: Compute the derivative of a signal.
 - **Correlation and Convolution**: Analyze signals using correlation and convolution.
 - **Moving Average**: Calculate the moving average of a signal.
 - **Remove DC**: Remove the DC component from signals.
-- 
+ 
 ![{C7F414CD-79EB-4E38-97DD-3C927BCE1F67}](https://github.com/user-attachments/assets/17ab4abe-7370-473d-9fd5-0663ed340cc9)
 
 ![{82E6D33A-6D1D-4105-9DB5-BDBBEDD6DBB9}](https://github.com/user-attachments/assets/200c83fb-7cd1-490a-acc2-c2a184970653)
