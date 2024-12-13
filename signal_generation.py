@@ -9,12 +9,12 @@ from comparesignals import SignalSamplesAreEqual
 # Function to generate and plot sinusoidal signals in two windows
 def generate_signal(amplitude_entry, phase_entry, analog_freq_entry, sampling_freq_entry, signal_type_var, cmpbool, root):
     try:
-        signal_type = signal_type_var.get()
-        amplitude = float(amplitude_entry.get())
-        phase_shift = float(phase_entry.get())
-        analog_freq = float(analog_freq_entry.get())
-        sampling_freq = float(sampling_freq_entry.get())
-        cmptemp = cmpbool.get()
+        signal_type = signal_type_var
+        amplitude = float(amplitude_entry)
+        phase_shift = float(phase_entry)
+        analog_freq = float(analog_freq_entry)
+        sampling_freq = float(sampling_freq_entry)
+        cmptemp = cmpbool
 
         if sampling_freq < 2 * analog_freq:
             messagebox.showerror("Sampling Error", "Sampling frequency must be at least twice the analog frequency!")
